@@ -4,4 +4,5 @@ com/tracker/util/DBConnection.class
 com/tracker/gui/MainFrame.class
 com/tracker/gui/CategoryFrame.class
 com/tracker/model/Category.class
+com/tracker/gui/CategoryFrame$1.class
 com/tracker/gui/ExpenseFrame.class
