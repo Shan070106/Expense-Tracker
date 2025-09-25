@@ -15,6 +15,7 @@ public class MainFrame extends JFrame{
     
     public MainFrame(){
         initalizeComponents();
+        setEventListeners();
     }
 
     private void initalizeComponents(){
@@ -38,20 +39,53 @@ public class MainFrame extends JFrame{
     }
 
     private void setEventListeners(){
-        categoryButton.addActionListener(
-            (e)->{
-                try {
-                    new CategoryFrame();
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    JOptionPane.showMessageDialog(rootPane, "Failed to get Category window","Failed !", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        );
+        categoryButton.addActionListener(e->callCategory());
+
+        expenseButton.addActionListener(e->callExpense());
+    }
+
+    private void callCategory(){
+        new CategoryFrame().setVisible(true);
+    }
+
+    private void callExpense(){
+        new ExpenseFrame().setVisible(true);
     }
 }
 
-class CategoryFrame  {
+class CategoryFrame  extends JFrame{
+    public CategoryFrame(){
+        initializeComponents();
+        setupLayout();
+    }
+    
+    private void initializeComponents(){
+        setTitle("Category Window");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(800,600);
+        setLocationRelativeTo(rootPane);
+    }
 
+    private void setupLayout(){
+
+    }
+}
+
+class ExpenseFrame extends JFrame {
+    public ExpenseFrame(){
+        initializeComponents();
+        setupLayout();
+    }
+
+    private void initializeComponents(){
+        setTitle("Expense Window");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(rootPane);
+    }
+
+    private void setupLayout(){
+
+    }
     
 }
