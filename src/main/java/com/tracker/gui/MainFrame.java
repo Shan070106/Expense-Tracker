@@ -1,15 +1,28 @@
 package com.tracker.gui;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import java.awt.*;
-import java.util.List;
-import java.sql.SQLException;
-
 import com.tracker.dao.Dao;
-import com.tracker.util.*;
-import com.tracker.model.*;
+import com.tracker.model.Category;
 
 
 public class MainFrame extends JFrame{
@@ -225,14 +238,9 @@ class CategoryFrame  extends JFrame{
     }
 
     private void loadCategoryTable() {
-        // TODO: Implement logic to load/reload category data into the tableModel
-        // Example:
-        // tableModel.setRowCount(0);
-        // List<Category> categories = dao.getAllCategories();
-        // for (Category c : categories) {
-        //     tableModel.addRow(new Object[]{c.getName(), c.getCount(), c.getAmount()});
-        // }
-
+        categoryField.setText("");
+        searchField.setText("");
+        
         try {
           List<Category> categories = dao.getAllCategories();
             updateCategoryTable(categories);
