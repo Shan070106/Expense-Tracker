@@ -125,9 +125,9 @@ class CategoryFrame  extends JFrame{
         categoryField = new JTextField(20);
         searchField = new JTextField(20);
 
-        addButton = new JButton("Add category");
-        deleteButton = new JButton("Delete category");
-        updateButton = new JButton("Update category");
+        addButton = new JButton("Add");
+        deleteButton = new JButton("Delete");
+        updateButton = new JButton("Update");
         findButton = new JButton("Find");
         openButton = new JButton("Open");
         refreshButton = new JButton("Refresh");
@@ -240,7 +240,7 @@ class CategoryFrame  extends JFrame{
     private void loadCategoryTable() {
         categoryField.setText("");
         searchField.setText("");
-        
+
         try {
           List<Category> categories = dao.getAllCategories();
             updateCategoryTable(categories);
@@ -250,6 +250,30 @@ class CategoryFrame  extends JFrame{
     }
 
     private void deleteCategory(){
+        int row = categoryTable.getSelectedRow();
+
+        if(row == -1){
+            JOptionPane.showMessageDialog(this,"Please select a row!","Invalid row",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+
+        String category = (String)categoryTable.getValueAt(row, 0);
+        categoryField.setText(category);
+        
+        try {
+            if(dao.removeCategory(category)){
+                JOptionPane.showMessageDialog(this, category + "category deleted successfully","Deletion successful",JOptionPane.INFORMATION_MESSAGE);
+                loadCategoryTable();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Failed to delete category" + category,"Deletion failed",JOptionPane.ERROR_MESSAGE);
+            }
+        } 
+        catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getStackTrace(),"Deletion failed!",JOptionPane.ERROR_MESSAGE);
+        }
+
+
         
     }
 

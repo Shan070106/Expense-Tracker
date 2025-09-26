@@ -16,7 +16,7 @@ public class Dao {
     private static final String C_SELECT_ALL = "SELECT * FROM category;";
     private static final String C_INSERT = "INSERT INTO category(cname) VALUES(?);";    
     private static final String C_UPDATE = "UPDATE category SET cname = ? WHERE cid = ?;";
-    private static final String C_DELETE = "DELETE FROM category WHERE cid = ?;";
+    private static final String C_DELETE = "DELETE FROM category WHERE cname = ?;";
     private static final String C_FILTER = "SELECT * FROM category WHERE cname = ?;";
     private static final String C_AMOUNT = "SELECT SUM(amount) FROM expense WHERE idc = ?;";
     private static final String C_COUNT =  "SELECT COUNT(*) FROM expense WHERE idc = ?;";    
@@ -100,5 +100,16 @@ public class Dao {
             }
         } 
         return count;
+    }
+
+    public boolean removeCategory( String category) throws SQLException{
+        try(
+            Connection connection =  DBConnection.getDBConnection();
+            PreparedStatement statement = connection.prepareStatement(C_DELETE);
+        ){
+            statement.setString(1, category);
+            int rowsAffected = statement.executeUpdate();
+            return  rowsAffected > 0;
+        }
     }
 }
