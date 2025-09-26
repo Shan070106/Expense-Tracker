@@ -4,7 +4,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
+import java.util.List;
 import java.sql.SQLException;
+
+import com.tracker.dao.Dao;
 import com.tracker.util.*;
 import com.tracker.model.*;
 
@@ -57,6 +60,7 @@ public class MainFrame extends JFrame{
 
 class CategoryFrame  extends JFrame{
 
+    private Dao dao;
     private JTextField categoryField;
     private JTextField searchField;
     private JButton findButton;
@@ -73,9 +77,11 @@ class CategoryFrame  extends JFrame{
 
 
     public CategoryFrame(){
+        this.dao = new Dao();
         initializeComponents();
         setupLayout();
         setupEventListeners();
+        loadCategoryTable();
     }
     
     private void initializeComponents(){
@@ -135,6 +141,7 @@ class CategoryFrame  extends JFrame{
         JPanel northPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8,8,8,8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -142,16 +149,22 @@ class CategoryFrame  extends JFrame{
         northPanel.add(new JLabel("Category"),gbc);
         
         gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
         northPanel.add(categoryField,gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
         northPanel.add(new JLabel("Search Bar"),gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 1;
+        northPanel.add(searchField,gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
         northPanel.add(findButton,gbc);
 
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -191,11 +204,56 @@ class CategoryFrame  extends JFrame{
     }
 
     private void addCategory(){
+        String categoryName = categoryField.getText().trim();
+        
+        if(categoryName.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Give new category name","Empty name", JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
 
+        try{
+            Category category = new Category(categoryName);
+            dao.createCategory(category);
+
+            JOptionPane.showMessageDialog(this, "New Category created", "Creation successful!", JOptionPane.INFORMATION_MESSAGE);
+            
+            loadCategoryTable();
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,e.getMessage(),"Creation Failed!",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadCategoryTable() {
+        // TODO: Implement logic to load/reload category data into the tableModel
+        // Example:
+        // tableModel.setRowCount(0);
+        // List<Category> categories = dao.getAllCategories();
+        // for (Category c : categories) {
+        //     tableModel.addRow(new Object[]{c.getName(), c.getCount(), c.getAmount()});
+        // }
+
+        try {
+          List<Category> categories = dao.getAllCategories();
+            updateCategoryTable(categories);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,e.getMessage(),"Loading failed",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void deleteCategory(){
         
+    }
+
+    private void updateCategoryTable(List<Category> categories) {
+        tableModel.setRowCount(0);
+        try {
+            for (Category c : categories) {
+                tableModel.addRow(new Object[]{c.getCname(), dao.getCategoricalCount(c.getCid()), dao.getCategoricalAmount(c.getCid())});
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,"Error occurred in updation!","Updation failed",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void updateCategory(){
