@@ -103,7 +103,7 @@ class CategoryFrame  extends JFrame{
         setSize(800,600);
         setLocationRelativeTo(rootPane);
         
-        String[] columNames = {"Category Name","Count","Amount"};
+        String[] columNames = {"Category ID","Category Name","Count","Amount"};
         tableModel = new DefaultTableModel(columNames,0){
 
             @Override
@@ -226,7 +226,7 @@ class CategoryFrame  extends JFrame{
 
         try{
             Category category = new Category(categoryName);
-            dao.createCategory(category);
+            System.out.println("Created new category ID :" + dao.createCategory(category));
 
             JOptionPane.showMessageDialog(this, "New Category created", "Creation successful!", JOptionPane.INFORMATION_MESSAGE);
             
@@ -257,16 +257,17 @@ class CategoryFrame  extends JFrame{
             return ;
         }
 
-        String category = (String)categoryTable.getValueAt(row, 0);
-        categoryField.setText(category);
+        int categoryID = (int)categoryTable.getValueAt(row, 0);
+        // categoryField.setText(category);
+        String categoryName = (String)categoryTable.getValueAt(row,1);
         
         try {
-            if(dao.removeCategory(category)){
-                JOptionPane.showMessageDialog(this, category + " category deleted successfully","Deletion successful",JOptionPane.INFORMATION_MESSAGE);
+            if(dao.removeCategory(categoryID)){
+                JOptionPane.showMessageDialog(this, categoryName + " category deleted successfully","Deletion successful",JOptionPane.INFORMATION_MESSAGE);
                 loadCategoryTable();
             }
             else{
-                JOptionPane.showMessageDialog(this, "Failed to delete category " + category,"Deletion failed",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to delete category " + categoryName,"Deletion failed",JOptionPane.ERROR_MESSAGE);
             }
         } 
         catch (SQLException e) {
@@ -278,7 +279,7 @@ class CategoryFrame  extends JFrame{
         tableModel.setRowCount(0);
         try {
             for (Category c : categories) {
-                tableModel.addRow(new Object[]{c.getCname(), dao.getCategoricalCount(c.getCid()), dao.getCategoricalAmount(c.getCid())});
+                tableModel.addRow(new Object[]{c.getCid(),c.getCname(), dao.getCategoricalCount(c.getCid()), dao.getCategoricalAmount(c.getCid())});
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,"Error occurred in updation!","Updation failed",JOptionPane.ERROR_MESSAGE);
@@ -286,18 +287,52 @@ class CategoryFrame  extends JFrame{
     }
 
     private void updateCategory(){
-        // TODO: Implement update logic here
+        int row = categoryTable.getSelectedRow();
+
+        if(row == -1){
+            JOptionPane.showMessageDialog(this, "Please select a row !","Invalid row",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+
+        String newCategory = categoryField.getText().trim();
+
+        if(newCategory.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Give valid name for category","Invalid category name",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+
+        int categoryID = (int)tableModel.getValueAt(row, 0);
+        String oldCategory = (String)tableModel.getValueAt(row, 1);
+
+        try {
+
+            Category category = new Category(categoryID,newCategory);
+
+            if(dao.updateCategory(category)){
+                JOptionPane.showMessageDialog(this, oldCategory + " category updated as "+ newCategory +" successfully !", "Updated successfully!", JOptionPane.INFORMATION_MESSAGE);
+                loadCategoryTable();
+            }
+            else
+                JOptionPane.showMessageDialog(this, "Category update failed ","Update failed",JOptionPane.ERROR_MESSAGE);
+
+        } 
+        catch (SQLException e) {
+
+            JOptionPane.showMessageDialog(this, "Updation aborted due to some error occurred ","Updation failed",JOptionPane.ERROR_MESSAGE);
+
+        }
+        
     }
 
     private void refreshCategory() {
-        // TODO: Implement refresh logic here
+        loadCategoryTable();
     }
 
     private void loadSelectedCategory(){
         int row = categoryTable.getSelectedRow();
 
         if(row != -1){
-            String category = tableModel.getValueAt(row, 0).toString();
+            String category = tableModel.getValueAt(row, 1).toString();
             categoryField.setText(category);
         }
     }

@@ -10,7 +10,6 @@ public class Category{
     
     public Category(String category){
         cname = category;
-        cid = -1;
     }
 
     public Category(int cid,String cname){
