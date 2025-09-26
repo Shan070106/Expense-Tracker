@@ -117,7 +117,7 @@ class CategoryFrame  extends JFrame{
         categoryTable.getSelectionModel().addListSelectionListener(
             e->{
                 if(!e.getValueIsAdjusting()){
-                    // loadSelectedcategory();
+                    loadSelectedCategory();
                 }
             }
         );
@@ -262,19 +262,16 @@ class CategoryFrame  extends JFrame{
         
         try {
             if(dao.removeCategory(category)){
-                JOptionPane.showMessageDialog(this, category + "category deleted successfully","Deletion successful",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, category + " category deleted successfully","Deletion successful",JOptionPane.INFORMATION_MESSAGE);
                 loadCategoryTable();
             }
             else{
-                JOptionPane.showMessageDialog(this, "Failed to delete category" + category,"Deletion failed",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to delete category " + category,"Deletion failed",JOptionPane.ERROR_MESSAGE);
             }
         } 
         catch (SQLException e) {
             JOptionPane.showMessageDialog(this, e.getStackTrace(),"Deletion failed!",JOptionPane.ERROR_MESSAGE);
         }
-
-
-        
     }
 
     private void updateCategoryTable(List<Category> categories) {
@@ -294,6 +291,15 @@ class CategoryFrame  extends JFrame{
 
     private void refreshCategory() {
         // TODO: Implement refresh logic here
+    }
+
+    private void loadSelectedCategory(){
+        int row = categoryTable.getSelectedRow();
+
+        if(row != -1){
+            String category = tableModel.getValueAt(row, 0).toString();
+            categoryField.setText(category);
+        }
     }
 }
 
