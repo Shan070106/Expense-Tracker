@@ -20,7 +20,9 @@ public class Dao {
     private static final String C_FILTER = "SELECT * FROM category WHERE cname = ?;";
     private static final String C_AMOUNT = "SELECT SUM(amount) FROM expense WHERE idc = ?;";
     private static final String C_COUNT =  "SELECT COUNT(*) FROM expense WHERE idc = ?;";    
-    // private static final String = ";";
+    private static final String TOTAL_AMOUNT = "SELECT SUM(amount) FROM expense ;";
+    private static final String C_FIND = "SELECT count FROM category WHERE cname = ?;";
+    private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM expense INNER JOIN category WHERE category.cid = expense.idc;";
 
     private Category getCategory(ResultSet resultSet) throws SQLException {
         int cid = resultSet.getInt("cid");
@@ -101,6 +103,23 @@ public class Dao {
         } 
         return count;
     }
+    public boolean  getCategoricalCount(String cname) throws SQLException{
+        int count;
+        try (
+            Connection connection = DBConnection.getDBConnection();
+            PreparedStatement statement = connection.prepareStatement(C_COUNT);
+        ) {
+            statement.setString(1, cname);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt(1);
+            } else {
+                count = 0;
+            }
+        } 
+        return count > 0;
+    }
 
     public boolean removeCategory( int categoryID) throws SQLException{
         try(
@@ -120,7 +139,7 @@ public class Dao {
         ){
             statement.setInt(2, category.getCid());
             statement.setString(1, category.getCname());
-            
+
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         }

@@ -1,5 +1,6 @@
 com\tracker\gui\CategoryFrame.class
 com\tracker\util\DBConnection.class
+com\tracker\gui\ExpenseFrame$1.class
 com\tracker\gui\CategoryFrame$1.class
 com\tracker\model\Expense.class
 com\tracker\gui\ExpenseFrame.class

@@ -1,16 +1,9 @@
-// try{
-//             Connection cn = DatabaseConnection.getDBConnection();
-//             System.out.println("Connection ok dei super da");
-//         }
-//         catch(SQLException e){
-//             System.out.println("connection failed da");
-//         }
 package com.tracker;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.swing.SwingUtilities;
-// import javax.swing.UIManager;
 
 import com.tracker.gui.MainFrame;
 import com.tracker.util.DBConnection;

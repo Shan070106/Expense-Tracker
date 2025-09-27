@@ -145,7 +145,7 @@ class CategoryFrame  extends JFrame{
     private void setupLayout(){
         setLayout(new BorderLayout());
 
-        JPanel eastPanel = new JPanel(new GridLayout(0,1,10,10));
+        JPanel eastPanel = new JPanel(new GridLayout(0,1,50,50));
         eastPanel.add(addButton);
         eastPanel.add(deleteButton);
         eastPanel.add(updateButton);
@@ -182,7 +182,6 @@ class CategoryFrame  extends JFrame{
 
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         southPanel.add(new JLabel("Total amount spent on all category(overall expense)"));
-        // southPanel.add(getTotal(),new JPanel());
 
         add(northPanel,BorderLayout.NORTH);
         add(eastPanel,BorderLayout.EAST);
@@ -213,7 +212,13 @@ class CategoryFrame  extends JFrame{
     }
 
     private void findCategory() {
-        // TODO: Implement find logic here
+        // String category = searchField.getText();
+        // try {
+        //     if(dao.getCategoricalCount(category))
+            
+        // } catch (SQLException e) {
+            
+        // }
     }
 
     private void addCategory(){
@@ -242,9 +247,12 @@ class CategoryFrame  extends JFrame{
         searchField.setText("");
 
         try {
-          List<Category> categories = dao.getAllCategories();
-            updateCategoryTable(categories);
-        } catch (SQLException e) {
+
+            List<Category> categories = dao.getAllCategories();
+            updateCategoryTable(categories);    
+        } 
+        catch (SQLException e) {
+          
             JOptionPane.showMessageDialog(this,e.getMessage(),"Loading failed",JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -258,7 +266,6 @@ class CategoryFrame  extends JFrame{
         }
 
         int categoryID = (int)categoryTable.getValueAt(row, 0);
-        // categoryField.setText(category);
         String categoryName = (String)categoryTable.getValueAt(row,1);
         
         try {
@@ -339,9 +346,28 @@ class CategoryFrame  extends JFrame{
 }
 
 class ExpenseFrame extends JFrame {
+
+    private Dao dao;
+    private JTextField descriptionField;
+    private JTextField amountField;
+    private JTextField expenseField;
+    private JTextField searchField;
+    private JButton findButton;
+    private JButton addButton;
+    private JButton deleteButton;
+    private JButton updateButton; 
+    private JButton refreshButton;
+    private JPanel searchPanel;
+    private JTable expenseTable;
+    private DefaultTableModel tableModel;
+    private final int BUTTON_HEIGHT = 20,BUTTON_WIDTH = 100; 
+
     public ExpenseFrame(){
+        this.dao = new Dao();
         initializeComponents();
         setupLayout();
+        setupEventListeners();
+        loadExpenseTable();
     }
 
     private void initializeComponents(){
@@ -349,10 +375,100 @@ class ExpenseFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(rootPane);
+        
+        String[] columNames = {"Expense ID","Description","Amount","Category","Date"};
+        tableModel = new DefaultTableModel(columNames,0){
+
+            @Override
+            public boolean isCellEditable(int row,int col){
+                return false;
+            }
+        };
+
+        expenseTable = new JTable(tableModel);
+        expenseTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        expenseTable.getSelectionModel().addListSelectionListener(
+            e->{
+                if(!e.getValueIsAdjusting()){
+                    loadSelectedExpense();
+                }
+            }
+        );
+        
+        expenseField = new JTextField(20);
+        descriptionField = new JTextField(20);
+        amountField = new JTextField(20);
+        searchField = new JTextField(20);
+
+        addButton = new JButton("Add");
+        deleteButton = new JButton("Delete");
+        updateButton = new JButton("Update");
+        findButton = new JButton("Find");
+        refreshButton = new JButton("Refresh");
+
+        addButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));
+        deleteButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));            
+        updateButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));
+        refreshButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));
+        findButton.setPreferredSize(new Dimension(160,40));
     }
 
     private void setupLayout(){
+        setLayout(new BorderLayout());
 
+        JPanel eastPanel = new JPanel(new GridLayout(0,1,50,50));
+        eastPanel.add(addButton);
+        eastPanel.add(deleteButton);
+        eastPanel.add(updateButton);
+        eastPanel.add(refreshButton);
+
+        JPanel northPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8,8,8,8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        northPanel.add(new JLabel("Expense"),gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        northPanel.add(expenseField,gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        northPanel.add(new JLabel("Search Bar"),gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        northPanel.add(searchField,gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        northPanel.add(findButton,gbc);
+
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        southPanel.add(new JLabel("Expense Status"));
+
+        add(northPanel,BorderLayout.NORTH);
+        add(eastPanel,BorderLayout.EAST);
+        add(new JScrollPane(expenseTable),BorderLayout.CENTER);
+        add(southPanel,BorderLayout.SOUTH);
     }
     
+    private void setupEventListeners(){
+
+    }
+
+    private void loadExpenseTable(){
+
+    }
+
+    private void loadSelectedExpense(){
+
+    }
 }
