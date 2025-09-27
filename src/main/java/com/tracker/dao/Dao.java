@@ -5,10 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.tracker.model.Category;
+import com.tracker.model.Expense;
 import com.tracker.util.DBConnection;
 
 public class Dao {
@@ -22,7 +24,7 @@ public class Dao {
     private static final String C_COUNT =  "SELECT COUNT(*) FROM expense WHERE idc = ?;";    
     private static final String TOTAL_AMOUNT = "SELECT SUM(amount) FROM expense ;";
     private static final String C_FIND = "SELECT count FROM category WHERE cname = ?;";
-    private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM expense INNER JOIN category WHERE category.cid = expense.idc;";
+    private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM category RIGHT OUTER JOIN expense ON category.cid = expense.idc;";
 
     private Category getCategory(ResultSet resultSet) throws SQLException {
         int cid = resultSet.getInt("cid");
@@ -30,8 +32,17 @@ public class Dao {
         // int count = resultSet.getInt("count");
         return new Category(cid, cname);
     }
-    
-    //perfect 
+     
+    private Expense getExpense(ResultSet resultSet) throws SQLException{
+        int eid = resultSet.getInt("eid");
+        int amount = resultSet.getInt("amount");
+        String cname = resultSet.getString("cname");
+        String description = resultSet.getString("description");
+        LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
+
+        return new Expense(eid,description,amount,cname,date);
+    }
+
     public List<Category> getAllCategories() throws SQLException{
         List<Category> categories = new ArrayList<>();
         try (
@@ -45,6 +56,21 @@ public class Dao {
                 }
             } 
             return categories;
+    }
+
+    public List<Expense> getAllExpenses() throws SQLException{
+        List<Expense> expenses = new ArrayList<>();
+        try(
+            Connection connection = DBConnection.getDBConnection();
+            PreparedStatement statment = connection.prepareStatement(ALL_EXPENSES);
+        ){
+            ResultSet resultSet = statment.executeQuery();
+
+            while(resultSet.next()){
+                expenses.add(getExpense(resultSet));
+            }
+        }
+        return expenses;
     }
 
     public int createCategory(Category category) throws SQLException{

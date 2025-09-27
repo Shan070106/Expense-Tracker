@@ -17,12 +17,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import com.tracker.dao.Dao;
 import com.tracker.model.Category;
+import com.tracker.model.Expense;
 
 
 public class MainFrame extends JFrame{
@@ -43,7 +45,7 @@ public class MainFrame extends JFrame{
         setLocationRelativeTo(null);
 
         expenseButton = new JButton("Expense");
-        expenseButton.setPreferredSize(new Dimension(HEIGHT,WIDTH));;
+        expenseButton.setPreferredSize(new Dimension(HEIGHT,WIDTH));
         
         categoryButton = new JButton("Category");
         categoryButton.setPreferredSize(new Dimension(HEIGHT, WIDTH));
@@ -73,7 +75,7 @@ public class MainFrame extends JFrame{
 
 class CategoryFrame  extends JFrame{
 
-    private Dao dao;
+    final private  Dao dao;
     private JTextField categoryField;
     private JTextField searchField;
     private JButton findButton;
@@ -82,7 +84,7 @@ class CategoryFrame  extends JFrame{
     private JButton updateButton;
     private JButton openButton; 
     private JButton refreshButton;
-    private JPanel searchPanel;
+    // private JPanel searchPanel;
     private JTable categoryTable;
     private DefaultTableModel tableModel;
     private final int BUTTON_HEIGHT = 20,BUTTON_WIDTH = 100;
@@ -147,8 +149,8 @@ class CategoryFrame  extends JFrame{
 
         JPanel eastPanel = new JPanel(new GridLayout(0,1,50,50));
         eastPanel.add(addButton);
-        eastPanel.add(deleteButton);
         eastPanel.add(updateButton);
+        eastPanel.add(deleteButton);
         eastPanel.add(refreshButton);
 
         JPanel northPanel = new JPanel(new GridBagLayout());
@@ -347,17 +349,17 @@ class CategoryFrame  extends JFrame{
 
 class ExpenseFrame extends JFrame {
 
-    private Dao dao;
-    private JTextField descriptionField;
+    final private Dao dao;
+    private JTextArea descriptionField;
     private JTextField amountField;
-    private JTextField expenseField;
+    private JTextField categoryField;
     private JTextField searchField;
     private JButton findButton;
     private JButton addButton;
     private JButton deleteButton;
     private JButton updateButton; 
     private JButton refreshButton;
-    private JPanel searchPanel;
+    // private JPanel searchPanel;
     private JTable expenseTable;
     private DefaultTableModel tableModel;
     private final int BUTTON_HEIGHT = 20,BUTTON_WIDTH = 100; 
@@ -395,10 +397,10 @@ class ExpenseFrame extends JFrame {
             }
         );
         
-        expenseField = new JTextField(20);
-        descriptionField = new JTextField(20);
-        amountField = new JTextField(20);
+        categoryField = new JTextField(20);
+        amountField = new JTextField(10);
         searchField = new JTextField(20);
+        descriptionField = new JTextArea(5,20);
 
         addButton = new JButton("Add");
         deleteButton = new JButton("Delete");
@@ -410,44 +412,64 @@ class ExpenseFrame extends JFrame {
         deleteButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));            
         updateButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));
         refreshButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));
-        findButton.setPreferredSize(new Dimension(160,40));
+        findButton.setPreferredSize(new Dimension(100,40));
     }
 
     private void setupLayout(){
         setLayout(new BorderLayout());
 
-        JPanel eastPanel = new JPanel(new GridLayout(0,1,50,50));
+        JPanel eastPanel = new JPanel(new GridLayout(0,1,25,25));
         eastPanel.add(addButton);
-        eastPanel.add(deleteButton);
         eastPanel.add(updateButton);
+        eastPanel.add(deleteButton);
         eastPanel.add(refreshButton);
 
         JPanel northPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8,8,8,8);
+        gbc.insets = new Insets(5,5,5,5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
-        northPanel.add(new JLabel("Expense"),gbc);
+        northPanel.add(new JLabel("Category"),gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        northPanel.add(expenseField,gbc);
-
+        northPanel.add(categoryField,gbc);
+        
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        northPanel.add(new JLabel("Description:-"),gbc);
+        
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        northPanel.add(new JLabel("Amount"),gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        northPanel.add(amountField,gbc);
+        
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        northPanel.add(new JScrollPane(descriptionField),gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
         northPanel.add(new JLabel("Search Bar"),gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         northPanel.add(searchField,gbc);
 
         gbc.gridx = 2;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
         northPanel.add(findButton,gbc);
 
@@ -461,14 +483,70 @@ class ExpenseFrame extends JFrame {
     }
     
     private void setupEventListeners(){
+        addButton.addActionListener(e->{
+            addExpense();
+        });
+
+        deleteButton.addActionListener(e->{
+            deleteExpense();
+        });
+
+        updateButton.addActionListener(e->{
+            updateExpense();
+        });
+
+        refreshButton.addActionListener(e->{
+            refreshExpenseTable();
+        });
+    }
+
+    private void addExpense(){
+        
+    }
+
+    private void deleteExpense(){
+
+    }
+
+    private void updateExpense(){
+
+    }
+
+    private  void refreshExpenseTable(){
 
     }
 
     private void loadExpenseTable(){
+        descriptionField.setText("");
+        categoryField.setText("");
+        searchField.setText("");
+        amountField.setText("");
 
+        try {
+            List<Expense> expenses = dao.getAllExpenses();
+            updateExpenseTable(expenses);    
+        } 
+        catch (SQLException e) {
+          
+            JOptionPane.showMessageDialog(this,e.getMessage(),"Loading failed",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void loadSelectedExpense(){
+        
+    }
 
+    private void updateExpenseTable(List<Expense> expenses) {
+        tableModel.setRowCount(0);
+
+        for (Expense expense : expenses) {
+            tableModel.addRow(new Object[] {
+                expense.getEid(),
+                expense.getDescription(),
+                expense.getAmount(),
+                expense.getCname(),
+                expense.getDate()
+            });
+        }
     }
 }

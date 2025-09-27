@@ -6,8 +6,17 @@ public class Expense {
     private int eid;
     private String description;
     private long amount;
-    private int idc; //foreign key
+    private String cname; //foreign key
     private LocalDateTime date;
+
+    // constructor for adding a new expense
+    public Expense(int eid,String description, int amount,String cname,LocalDateTime date){
+        this.eid = eid;
+        this.description = description;
+        this.amount = amount;
+        this.cname = cname;
+        this.date = date;
+    }
 
     public int getEid() {
         return eid;
@@ -27,11 +36,11 @@ public class Expense {
     public void setAmount(long amount) {
         this.amount = amount;
     }
-    public int getIdc() {
-        return idc;
+    public String getCname() {
+        return cname;
     }
-    public void setIdc(int idc) {
-        this.idc = idc;
+    public void setIdc(String cname) {
+        this.cname = cname;
     }
     public LocalDateTime getDate() {
         return date;
