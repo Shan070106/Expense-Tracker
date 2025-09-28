@@ -524,8 +524,10 @@ class ExpenseFrame extends JFrame {
         System.out.println("Amount entered: " + amount);
 
         try {
+            Expense expense = new Expense(description,category,amount);
+
+        } catch (SQLException e) {
             
-        } catch (Exception e) {
         }
     }
 

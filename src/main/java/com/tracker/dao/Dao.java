@@ -25,6 +25,8 @@ public class Dao {
     private static final String TOTAL_AMOUNT = "SELECT SUM(amount) FROM expense ;";
     private static final String C_FIND = "SELECT count FROM category WHERE cname = ?;";
     private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM category RIGHT OUTER JOIN expense ON category.cid = expense.idc;";
+    private static final String E_INSERT = "INSERT INTO expense(description,amount,idc) VALUES()";
+    private static final String FIND_CID = "SELECT cid FROM category WHERE cname = ?;";
 
     private Category getCategory(ResultSet resultSet) throws SQLException {
         int cid = resultSet.getInt("cid");
@@ -92,6 +94,29 @@ public class Dao {
                     throw new SQLException("Creating category failed, no ID obtained");
             } 
         } 
+    }
+
+    public int addExpense(Expense expense) throws SQLException{
+        int categoryId;
+        try(
+            Connection connection = DBConnection.getDBConnection();
+            PreparedStatement findCid = connection.prepareStatement(FIND_CID);
+            PreparedStatement  eInsert  = connection.prepareStatement(E_INSERT);
+            PreparedStatement 
+        ){
+            statment.setString(1,expense.getCname());
+            ResultSet resultSet = statment.executeQuery();
+            if(resultSet.next()){
+                categoryId = resultSet.getInt("cid");
+            }
+            else{
+                categoryId = -1;
+            }
+        }
+
+        try(
+            Connection connection = DBConnection.getDBConnection();
+        )
     }
     
     public int getCategoricalAmount(int cid) throws SQLException{

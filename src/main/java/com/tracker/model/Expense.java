@@ -9,13 +9,18 @@ public class Expense {
     private String cname; //foreign key
     private LocalDateTime date;
 
-    // constructor for adding a new expense
     public Expense(int eid,String description, int amount,String cname,LocalDateTime date){
         this.eid = eid;
         this.description = description;
         this.amount = amount;
         this.cname = cname;
         this.date = date;
+    }
+
+    public Expense(String description, String cname, int amount){
+        this.amount = amount;
+        this.description = description;
+        this.cname = cname;
     }
 
     public int getEid() {
