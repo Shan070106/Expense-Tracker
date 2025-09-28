@@ -501,7 +501,32 @@ class ExpenseFrame extends JFrame {
     }
 
     private void addExpense(){
+        String description = descriptionField.getText().trim();
+        String category = categoryField.getText().trim();
+        int amount = 0;
+
+        if(category.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Please enter category.","Invlaid Input",JOptionPane.ERROR_MESSAGE);
+            return ;
+        }
+
+        if(description.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Please enter description or type as 'nil'","Input validation",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
         
+        try {
+            amount = Integer.parseInt(amountField.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid number for amount.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        System.out.println("Amount entered: " + amount);
+
+        try {
+            
+        } catch (Exception e) {
+        }
     }
 
     private void deleteExpense(){
@@ -513,15 +538,15 @@ class ExpenseFrame extends JFrame {
     }
 
     private  void refreshExpenseTable(){
-
-    }
-
-    private void loadExpenseTable(){
         descriptionField.setText("");
         categoryField.setText("");
         searchField.setText("");
         amountField.setText("");
 
+        loadExpenseTable();
+    }
+
+    private void loadExpenseTable(){
         try {
             List<Expense> expenses = dao.getAllExpenses();
             updateExpenseTable(expenses);    
@@ -533,7 +558,16 @@ class ExpenseFrame extends JFrame {
     }
 
     private void loadSelectedExpense(){
-        
+        int row = expenseTable.getSelectedRow();
+        if(row != -1){
+            String category = tableModel.getValueAt(row, 3).toString();
+            String description = tableModel.getValueAt(row, 1).toString();
+            String amount = tableModel.getValueAt(row, 2).toString();
+            
+            categoryField.setText(category);
+            amountField.setText(amount);
+            descriptionField.setText(description);
+        }
     }
 
     private void updateExpenseTable(List<Expense> expenses) {
