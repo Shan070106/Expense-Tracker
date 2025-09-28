@@ -517,7 +517,8 @@ class ExpenseFrame extends JFrame {
         
         try {
             amount = Integer.parseInt(amountField.getText().trim());
-        } catch (NumberFormatException e) {
+        } 
+        catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Please enter a valid number for amount.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -525,9 +526,13 @@ class ExpenseFrame extends JFrame {
 
         try {
             Expense expense = new Expense(description,category,amount);
+            System.out.println("New expense Id: "+ dao.createExpense(expense));
+            loadExpenseTable();
+            
+            JOptionPane.showMessageDialog(this, "A new expense has been noted successfully","Expense inertion successful",JOptionPane.INFORMATION_MESSAGE);
 
         } catch (SQLException e) {
-            
+            JOptionPane.showMessageDialog(this,"Error occurred during creation of expense","Expense creation failed",JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -549,6 +554,10 @@ class ExpenseFrame extends JFrame {
     }
 
     private void loadExpenseTable(){
+        categoryField.setText("");
+        amountField.setText("");
+        descriptionField.setText("");
+
         try {
             List<Expense> expenses = dao.getAllExpenses();
             updateExpenseTable(expenses);    

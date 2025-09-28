@@ -25,7 +25,7 @@ public class Dao {
     private static final String TOTAL_AMOUNT = "SELECT SUM(amount) FROM expense ;";
     private static final String C_FIND = "SELECT count FROM category WHERE cname = ?;";
     private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM category RIGHT OUTER JOIN expense ON category.cid = expense.idc;";
-    private static final String E_INSERT = "INSERT INTO expense(description,amount,idc) VALUES()";
+    private static final String E_INSERT = "INSERT INTO expense(description,amount,idc) VALUES(?,?,?);";
     private static final String FIND_CID = "SELECT cid FROM category WHERE cname = ?;";
 
     private Category getCategory(ResultSet resultSet) throws SQLException {
@@ -96,27 +96,52 @@ public class Dao {
         } 
     }
 
-    public int addExpense(Expense expense) throws SQLException{
+    public int createExpense(Expense expense) throws SQLException{
         int categoryId;
         try(
             Connection connection = DBConnection.getDBConnection();
             PreparedStatement findCid = connection.prepareStatement(FIND_CID);
-            PreparedStatement  eInsert  = connection.prepareStatement(E_INSERT);
-            PreparedStatement 
+            PreparedStatement eInsert  = connection.prepareStatement(E_INSERT,Statement.RETURN_GENERATED_KEYS); 
+            PreparedStatement cInsert = connection.prepareStatement(C_INSERT, Statement.RETURN_GENERATED_KEYS);
         ){
-            statment.setString(1,expense.getCname());
-            ResultSet resultSet = statment.executeQuery();
-            if(resultSet.next()){
-                categoryId = resultSet.getInt("cid");
-            }
-            else{
-                categoryId = -1;
-            }
-        }
+            findCid.setString(1,expense.getCname());
+            ResultSet cidSet = findCid.executeQuery();
 
-        try(
-            Connection connection = DBConnection.getDBConnection();
-        )
+            if(!cidSet.next()){
+                cInsert.setString(1,expense.getCname());
+                int Affected = cInsert.executeUpdate();
+
+                if(Affected == 0)
+                    throw new SQLException("Creating a new category failed, no rows affected");
+            
+                try (ResultSet generatedKeys = cInsert.getGeneratedKeys();) {
+                    if(generatedKeys.next())
+                        categoryId = generatedKeys.getInt(1);
+                    else    
+                        throw new SQLException("Creating category failed, no ID obtained");
+                } 
+            }
+            else {
+                categoryId = cidSet.getInt("cid");
+            }
+
+            eInsert.setString(1,expense.getDescription());
+            eInsert.setLong(2,expense.getAmount());
+            eInsert.setInt(3,categoryId);
+
+            int rowsAffected = eInsert.executeUpdate();
+            if(rowsAffected == 0)
+                throw new SQLException("Adding an expense failed! No rows affected");
+
+            try( ResultSet generatedKeys = eInsert.getGeneratedKeys(); ){
+                if(generatedKeys.next())
+                    return generatedKeys.getInt(1);
+                else
+                    throw new SQLException("Adding new expense failed! No Id obtained");
+            }
+           
+        }
+    
     }
     
     public int getCategoricalAmount(int cid) throws SQLException{
