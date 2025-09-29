@@ -27,6 +27,7 @@ public class Dao {
     private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM category RIGHT OUTER JOIN expense ON category.cid = expense.idc;";
     private static final String E_INSERT = "INSERT INTO expense(description,amount,idc) VALUES(?,?,?);";
     private static final String FIND_CID = "SELECT cid FROM category WHERE cname = ?;";
+    private static final String E_UPDATE = "UPDATE expense SET description = ?, amount = ? WHERE eid = ? ;";
 
     private Category getCategory(ResultSet resultSet) throws SQLException {
         int cid = resultSet.getInt("cid");
@@ -215,6 +216,20 @@ public class Dao {
         ){
             statement.setInt(2, category.getCid());
             statement.setString(1, category.getCname());
+
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+
+    public boolean updateExpense(Expense expense) throws SQLException{
+        try(
+            Connection connection = DBConnection.getDBConnection();
+            PreparedStatement statement = connection.prepareStatement(E_UPDATE);
+        ){
+            statement.setInt(3,expense.getEid());
+            statement.setString(1,expense.getDescription());
+            statement.setLong(2,expense.getAmount());
 
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;

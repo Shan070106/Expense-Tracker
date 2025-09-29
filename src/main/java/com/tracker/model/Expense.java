@@ -17,10 +17,16 @@ public class Expense {
         this.date = date;
     }
 
-    public Expense(String description, String cname, int amount){
+    public Expense(String description,String category,int amount){
+        this.description = description;
+        this.amount = amount;
+        this.cname = category;
+    }
+
+    public Expense(int eid,String description, int amount){
+        this.eid = eid;
         this.amount = amount;
         this.description = description;
-        this.cname = cname;
     }
 
     public int getEid() {

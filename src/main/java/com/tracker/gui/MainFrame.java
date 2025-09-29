@@ -1,5 +1,6 @@
 package com.tracker.gui;
 
+import java.time.LocalDateTime;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -503,10 +504,10 @@ class ExpenseFrame extends JFrame {
     private void addExpense(){
         String description = descriptionField.getText().trim();
         String category = categoryField.getText().trim();
-        int amount = 0;
+        int amount ;
 
         if(category.isEmpty()){
-            JOptionPane.showMessageDialog(this,"Please enter category.","Invlaid Input",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,"Please enter category.","Invlaid Input",JOptionPane.WARNING_MESSAGE);
             return ;
         }
 
@@ -537,10 +538,49 @@ class ExpenseFrame extends JFrame {
     }
 
     private void deleteExpense(){
-
+        
     }
 
     private void updateExpense(){
+        int row = expenseTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this, "Please select a row !","Invalid input",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+
+        // String newCategory = categoryField.getText().trim();
+        String newDescription = descriptionField.getText().trim();
+
+        if( newDescription.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Please enter a category name and description","Input validation error",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+       
+        int newAmount = 0;
+        try{
+            newAmount = Integer.parseInt(amountField.getText().trim());
+        }
+        catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this,"Please a valid amount as number","Invlaid amount",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+
+        int eid = (int)tableModel.getValueAt(row,0);
+       
+        try {
+            Expense expense = new Expense(eid,newDescription,newAmount);
+
+            if(dao.updateExpense(expense)){
+                JOptionPane.showMessageDialog(this,"Selected expense updated successfully, update category in category window","Updation successful",JOptionPane.INFORMATION_MESSAGE);
+                loadExpenseTable();
+            }
+            else{
+                JOptionPane.showMessageDialog(this,"Expense updation failed, no rows affected","Updation failed",JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,"Database error occurred ","Updation failed",JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 
