@@ -530,7 +530,7 @@ class ExpenseFrame extends JFrame {
             System.out.println("New expense Id: "+ dao.createExpense(expense));
             loadExpenseTable();
             
-            JOptionPane.showMessageDialog(this, "A new expense has been noted successfully","Expense inertion successful",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Successfully added a new expense.","Expense inertion successful",JOptionPane.INFORMATION_MESSAGE);
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,"Error occurred during creation of expense","Expense creation failed",JOptionPane.ERROR_MESSAGE);
@@ -538,7 +538,25 @@ class ExpenseFrame extends JFrame {
     }
 
     private void deleteExpense(){
-        
+        int row = expenseTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this,"Please select a row!","Invalid input",JOptionPane.WARNING_MESSAGE);
+            return ;
+        }
+
+        int eid = (int)tableModel.getValueAt(row,0);
+
+        try{
+            if(dao.removeExpense(eid)){
+                JOptionPane.showMessageDialog(this,"Successfully deleted the selected expense.","Deletion successful",JOptionPane.INFORMATION_MESSAGE);
+                loadExpenseTable();
+            }
+            else{
+                JOptionPane.showMessageDialog(this,"Selected expense deletion failed, no rows affected","Deletion failed",JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,"Deletion failed due to error in database","Server crashed",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void updateExpense(){
@@ -571,7 +589,7 @@ class ExpenseFrame extends JFrame {
             Expense expense = new Expense(eid,newDescription,newAmount);
 
             if(dao.updateExpense(expense)){
-                JOptionPane.showMessageDialog(this,"Selected expense updated successfully, update category in category window","Updation successful",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Successfully updated the selected expense.\nUpdate the category in category window","Updation successful",JOptionPane.INFORMATION_MESSAGE);
                 loadExpenseTable();
             }
             else{

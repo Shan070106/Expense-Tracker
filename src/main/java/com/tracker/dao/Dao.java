@@ -28,6 +28,7 @@ public class Dao {
     private static final String E_INSERT = "INSERT INTO expense(description,amount,idc) VALUES(?,?,?);";
     private static final String FIND_CID = "SELECT cid FROM category WHERE cname = ?;";
     private static final String E_UPDATE = "UPDATE expense SET description = ?, amount = ? WHERE eid = ? ;";
+    private static final String E_DELETE = "DELETE FROM expense WHERE eid = ?;";
 
     private Category getCategory(ResultSet resultSet) throws SQLException {
         int cid = resultSet.getInt("cid");
@@ -206,6 +207,18 @@ public class Dao {
             statement.setInt(1, categoryID);
             int rowsAffected = statement.executeUpdate();
             return  rowsAffected > 0;
+        }
+    }
+
+    public boolean removeExpense(int expenseId) throws SQLException{
+        try(
+            Connection connection = DBConnection.getDBConnection();
+            PreparedStatement statement = connection.prepareStatement(E_DELETE);
+        ){
+            statement.setInt(1,expenseId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0; 
         }
     }
 
