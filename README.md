@@ -2,48 +2,64 @@
 
 Tracking expenses through a Maven Java application.
 
-A lightweight Maven-based Java application to record, view, and report personal or small-business expenses. This README explains how to build, run, and use the application locally, and how to contribute.
+This repository contains a desktop Java application (Maven-based) to record, view, and report expenses by category. Below are quick start instructions, usage notes, and the screenshots you provided showing the running application UI.
+
+> Note: Add the two screenshot files you shared to the repository at:
+> - assets/screenshots/category_window.png
+> - assets/screenshots/expense_window.png
+>
+> Then the images below will appear correctly in GitHub.
+
+---
 
 ## Table of contents
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Tech stack](#tech-stack)
 - [Prerequisites](#prerequisites)
-- [Quick start (build & run)](#quick-start-build--run)
-- [Usage examples](#usage-examples)
-- [Configuration](#configuration)
-- [Project structure (typical Maven layout)](#project-structure-typical-maven-layout)
+- [Build & run](#build--run)
+- [How to use the application (UI guide)](#how-to-use-the-application-ui-guide)
+- [Data & configuration](#data--configuration)
 - [Testing](#testing)
-- [Development / IDE](#development--ide)
+- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 
 ## Features
-- Record expenses with amount, date, category and optional notes
-- List and search expenses
-- Basic reporting (weekly/monthly totals or category breakdowns)
-- Persisted data (file or database — see Configuration)
-- CLI and/or simple UI (adjust according to repository implementation)
+- Add, update and delete expense categories.
+- Add, update and delete expenses (amount, category, description, timestamp).
+- Search and filter categories and expenses.
+- Simple reporting: per-category total amounts and counts.
+- Local persistence (file or embedded DB; see configuration section).
 
-(Adjust the feature list above to match the actual capabilities in your code.)
+## Screenshots
+(Category Window)
+![Category Window](assets/screenshots/category_window.png)
+
+(Expense Window)
+![Expense Window](assets/screenshots/expense_window.png)
+
+> If images do not display, make sure the files exist at `assets/screenshots/category_window.png` and `assets/screenshots/expense_window.png` and are committed to the repository.
 
 ## Tech stack
-- Java (version specified in the project's pom.xml; commonly 8, 11, or 17)
+- Java (see `pom.xml` for the exact version)
 - Maven for build and dependency management
-- (Optional) H2 / SQLite / file-based storage depending on the project implementation
+- Swing (likely) for the desktop GUI (or similar Java UI toolkit)
+- Local persistence (embedded DB or local file — see code)
 
 ## Prerequisites
-- Java JDK installed (check pom.xml for required Java version)
+- Java JDK installed (check `pom.xml` for required Java version)
 - Maven installed
-- Git (to clone repo)
+- Git (to clone repository)
 
-Check your installations:
+Verify:
 ```bash
 java -version
 mvn -v
 ```
 
-## Quick start (build & run)
+## Build & run
 
 1. Clone the repository:
 ```bash
@@ -55,119 +71,103 @@ cd Expense-Tracker
 ```bash
 mvn clean package
 ```
-This will compile the source and produce a jar under `target/`. The artifact name and version depend on your `pom.xml` (for example `target/expense-tracker-1.0.0.jar`).
+Maven will compile the project and produce a JAR under `target/`. The final artifact name depends on the `pom.xml` (for example `target/expense-tracker-1.0.0.jar`).
 
 3. Run the application:
-
-- If the project produces an executable jar:
+- If the build produced an executable jar:
 ```bash
-java -jar target/your-artifact-name.jar
+java -jar target/<artifact-name>.jar
 ```
-Replace `your-artifact-name.jar` with the actual jar filename generated in `target/`.
+Replace `<artifact-name>.jar` with the actual JAR filename created in `target/`.
 
-- If the project is a CLI and uses the Maven exec plugin (or you prefer to run via Maven):
-```bash
-mvn -q exec:java -Dexec.mainClass="fully.qualified.MainClass"
-```
-Replace `fully.qualified.MainClass` with the actual main class name. You can find the main class by searching for `public static void main` under `src/main/java`.
+- Or run from your IDE:
+  - Import as a Maven project (IntelliJ IDEA / Eclipse).
+  - Locate the main class (search for `public static void main(String[] args)`).
+  - Run using an application run configuration.
 
-- If the project is a web app (Spring Boot or similar), run and open:
-```
-java -jar target/your-artifact-name.jar
-# then open http://localhost:8080 (or the port your app uses)
-```
+## How to use the application (UI guide)
 
-## Usage examples
+Category Window (see screenshot):
+- Fields:
+  - Category: input for category name.
+  - Search Bar: filter categories in the table.
+- Table columns: Category ID, Category Name, Count, Amount.
+- Buttons (right side):
+  - Add — add a new category.
+  - Update — update the selected category.
+  - Delete — remove the selected category (if allowed).
+  - Refresh — reload the table.
+- Footer: shows total amount spent across categories (overall expense).
 
-Because this repo may be implemented as CLI or web app, below are example usage patterns you can adapt.
+Expense Window (see screenshot):
+- Fields:
+  - Category: choose or type the category for the expense.
+  - Amount: expense amount.
+  - Description: optional long text describing the expense.
+  - Search Bar: filter expense table.
+- Table columns: Expense ID, Description, Amount, Category, Date.
+- Buttons (right side):
+  - Add — add a new expense record.
+  - Update — update the selected expense.
+  - Delete — delete the selected expense.
+  - Refresh — reload the table.
+- Footer: shows expense status or messages.
 
-- Example CLI commands (hypothetical — update to real commands implemented in your app):
-```bash
-# Add an expense
-java -jar target/expense-tracker.jar add --amount 12.50 --category Food --date 2026-01-19 --note "Lunch"
+Typical flow:
+1. Create categories (if none exist).
+2. Add expenses and choose categories for each.
+3. Use search and filters to find records.
+4. Use Update/Delete to manage existing records.
+5. Use Refresh to reload data from persistent storage.
 
-# List recent expenses
-java -jar target/expense-tracker.jar list --limit 20
-
-# Show monthly report
-java -jar target/expense-tracker.jar report --month 2026-01
-```
-
-- Example web usage:
-1. Start the app: `java -jar target/expense-tracker.jar`
-2. Open browser: `http://localhost:8080`
-3. Use the UI to add and view expenses.
-
-If you prefer exact CLI flags or REST endpoints, I can read the code and add precise examples.
-
-## Configuration
-
-Configuration is typically found in:
-- `src/main/resources/application.properties` or `application.yml`
-- A properties/config file documented in the project README or `pom.xml`
-
-Common configuration options:
-- Storage: file path, H2/SQLite/JDBC URL
-- Port (for web apps)
-- Logging level
-
-Example (hypothetical) properties:
-```properties
-storage.type=file
-storage.file.path=./expenses.db
-server.port=8080
-```
-
-Edit the appropriate properties file or supply environment variables as supported by the app.
-
-## Project structure (typical Maven layout)
-```
-Expense-Tracker/
-├─ pom.xml
-├─ src/
-│  ├─ main/
-│  │  ├─ java/            # application sources
-│  │  └─ resources/       # config files, templates
-│  └─ test/
-│     └─ java/            # unit tests
-└─ target/                # build output
-```
-Adjust to the actual repository layout.
+## Data & configuration
+- Check `src/main/resources` or configuration files in the project root for DB settings or file paths.
+- The application likely uses an embedded DB or simple file storage — look for classes named `DB`, `Database`, `DAO`, `Repository`, or references to H2/SQLite/JDBC.
+- Backup your data by copying the local DB file (if present) before making risky changes.
 
 ## Testing
-Run unit tests with Maven:
+- If there are unit tests, run:
 ```bash
 mvn test
 ```
-
-Add or update tests under `src/test/java/`.
-
-## Development / IDE
-- Import the project into your IDE (IntelliJ IDEA, Eclipse) as a Maven project.
-- Use the IDE run configuration to run the main class or tests.
-- Use `mvn -DskipTests=true package` to build without running tests when needed.
+- Add tests to `src/test/java` when adding features or fixing bugs.
 
 ## Troubleshooting
-- Build failures: run `mvn -X clean package` to get full debug output.
-- Missing main class: search for `public static void main` under `src/main/java`.
-- Port conflicts (web app): change `server.port` in config or set environment variable.
+- Build errors: run `mvn -X clean package` for verbose output.
+- Missing main class: search for `public static void main` to find the entry point.
+- UI not launching: ensure Java version matches `pom.xml` target.
+- Database errors: ensure file permissions and configured paths are writable.
 
 ## Contributing
-Contributions are welcome. Typical steps:
-1. Fork the repository
-2. Create a branch: `git checkout -b feat/your-feature`
-3. Commit changes with clear messages
-4. Push and open a pull request
-5. Include tests and update README when adding features
+- Fork the repo, create a branch, implement changes, add tests, and open a pull request.
+- Use clear commit messages and describe behavior in the PR.
 
-Please follow code style already present in the repo and include unit tests for new logic.
+Suggested workflow:
+```bash
+git checkout -b feat/your-feature
+# make changes
+git add .
+git commit -m "Add <brief description>"
+git push origin feat/your-feature
+# open PR on GitHub
+```
+
+## Adding the screenshots you provided
+Place the two PNG files you shared into the repo and commit them:
+```bash
+mkdir -p assets/screenshots
+# copy your images into the directory:
+# (e.g. from local paths)
+cp /path/to/category_window.png assets/screenshots/category_window.png
+cp /path/to/expense_window.png assets/screenshots/expense_window.png
+
+git add assets/screenshots/category_window.png assets/screenshots/expense_window.png
+git commit -m "Add UI screenshots"
+git push
+```
 
 ## License
-If you have a preferred license, add a `LICENSE` file. Common options:
-- MIT License — permissive and simple
-- Apache 2.0 — permissive with patent protection
-
-Add a license file and update this section accordingly.
+If the project has no license file, it is "All rights reserved" by default. To open-source the project, add a `LICENSE` file (e.g., MIT, Apache-2.0) and update this section.
 
 ## Contact
 Maintainer: Shan070106  
@@ -175,5 +175,5 @@ GitHub: https://github.com/Shan070106
 
 ---
 
-Notes:
-- I kept commands general because I haven't inspected the repository files. If you want an exact README with the correct artifact name, main class, CLI flags, and configuration keys, I can read the repository and update the README accordingly or open a PR that adds this file directly.
+If you want, I can:
+- Create a commit/PR that adds this README and uploads the two screenshots into `assets/screenshots/` for you — tell me to proceed and I'll prepare the changes.
