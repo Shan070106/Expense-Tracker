@@ -19,10 +19,10 @@ public class Dao {
     private static final String C_INSERT = "INSERT INTO category(cname) VALUES(?);";    
     private static final String C_UPDATE = "UPDATE category SET cname = ? WHERE cid = ?;";
     private static final String C_DELETE = "DELETE FROM category WHERE cid = ?;";
-    private static final String C_FILTER = "SELECT * FROM category WHERE cname = ?;";
+    // private static final String C_FILTER = "SELECT * FROM category WHERE cname = ?;";
     private static final String C_AMOUNT = "SELECT SUM(amount) FROM expense WHERE idc = ?;";
     private static final String C_COUNT =  "SELECT COUNT(*) FROM expense WHERE idc = ?;";    
-    private static final String TOTAL_AMOUNT = "SELECT SUM(amount) FROM expense ;";
+    // private static final String TOTAL_AMOUNT = "SELECT SUM(amount) FROM expense ;";
     private static final String C_FIND = "SELECT count FROM category WHERE cname = ?;";
     private static final String ALL_EXPENSES = "SELECT eid,description,expense.amount,date,cname FROM category RIGHT OUTER JOIN expense ON category.cid = expense.idc;";
     private static final String E_INSERT = "INSERT INTO expense(description,amount,idc) VALUES(?,?,?);";
@@ -33,7 +33,6 @@ public class Dao {
     private Category getCategory(ResultSet resultSet) throws SQLException {
         int cid = resultSet.getInt("cid");
         String cname = resultSet.getString("cname");
-        // int count = resultSet.getInt("count");
         return new Category(cid, cname);
     }
      
@@ -248,4 +247,20 @@ public class Dao {
             return rowsAffected > 0;
         }
     }
+
+    public Category findCategory(String category) throws SQLException{
+        try(
+            Connection connection = DBConnection.getDBConnection();
+            PreparedStatement statement = connection.prepareStatement(C_FIND);
+        ){
+            statement.setString(1, category);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                return getCategory(resultSet);
+            }
+            else 
+                return null;
+        }
+
+    }    
 }
