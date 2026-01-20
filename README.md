@@ -174,6 +174,3 @@ Maintainer: Shan070106
 GitHub: https://github.com/Shan070106
 
 ---
-
-If you want, I can:
-- Create a commit/PR that adds this README and uploads the two screenshots into `assets/screenshots/` for you — tell me to proceed and I'll prepare the changes.
